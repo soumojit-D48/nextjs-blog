@@ -6,3 +6,4 @@ export const authClient = createAuthClient({
 })
 
 export const {signUp, signIn, signOut, useSession} = authClient
+// useSession -> React hook to get the current logged-in user’s session.
