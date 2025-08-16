@@ -20,7 +20,12 @@ export function slugify(text: string): string {
     .replace(/\s+/g, "-")         // replace spaces with -
     .replace(/-+/g, "-")          // collapse multiple -
 }
-
-
-
 // convert -> name surname hello to name-surname-hello
+
+export function formatDate(date: Date) : string {
+  return new Intl.DateTimeFormat('en-US',{
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  }).format(date)
+}

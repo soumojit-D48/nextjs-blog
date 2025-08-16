@@ -8,9 +8,10 @@ import { Button } from '../ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
-import { createPost } from '@/actions/post-actions';
+import { createPost, updatePost } from '@/actions/post-actions';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { PostFormProps } from '@/lib/types';
 
 // post form schema for validation
 
@@ -29,18 +30,31 @@ const postSchema = z.object({
 type PostFormValues = z.infer<typeof postSchema>
 
 
-function PostForm() {
+function PostForm({isEditing, post} : PostFormProps) {
     const [isPending, startTransition] = useTransition()
     // disabled the button while the form is pending
     const router = useRouter()
 
     const {register, handleSubmit, formState: {errors}} = useForm<PostFormValues>({
         resolver: zodResolver(postSchema), // to get the errors we use fromstate 
-        defaultValues: {
+
+        defaultValues: isEditing && post ? // editing page
+        {
+            title: post.title,
+            description: post.description,
+            content: post.content
+        } :
+        {
             title: '',
             description: '',
             content: '',
-        },
+        }
+
+        // defaultValues: {
+        //     title: '',
+        //     description: '',
+        //     content: '',
+        // },
     })
 
     const onFormSubmit = async (data: PostFormValues) => {
@@ -53,11 +67,18 @@ function PostForm() {
                 formData.append('content', data.content)
 
                 let res 
-                res = await createPost(formData)
+
+                if(isEditing && post){
+                    res = await updatePost(post.id, formData)
+                } else {
+                    res = await createPost(formData)
+                }
                 console.log(res);
 
                 if(res.success){
-                    toast("Post created successfully!")
+                    toast(
+                        isEditing ? "Post edited successfully!" : "Post created successfully!"
+                    )
                     router.refresh()
                     router.push('/')
                 } else {
@@ -117,7 +138,13 @@ function PostForm() {
                 }
             </div>
             <Button type='submit' disabled={isPending} className='mt-5 w-full'>
-                {isPending ? "Saving Post..." : "Create Post"}
+                {isPending 
+                ? "Saving Post..." 
+                : 
+                    isEditing ? 
+                    'Update Post' 
+                    : "Create Post"
+                }
             </Button>
         </form>
     );

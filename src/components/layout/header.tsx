@@ -30,7 +30,7 @@ function Header () {
             <div className="container mx-auto px-4 py-2 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-6">
                     <Link href="/" className="font-bold text-xl">
-                        Next.js 15 Blog
+                        @Next-Blog
                     </Link>
 
                 <nav className="hidden md:flex items-center gap-6">
